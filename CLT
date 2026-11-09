@@ -1,0 +1,113 @@
+import tkinter as tk
+from tkinter import ttk
+
+
+def so_numero(texto):
+    return texto.isdigit() or texto == "" or texto == "."
+
+
+janela = tk.Tk()
+janela.title("CONTROL FINANCE")
+janela.geometry("550x650")  # Aumentei a altura pra caber os resultados embaixo
+
+registro = janela.register(so_numero)
+
+# Título no topo, centralizado
+titule = ttk.Label(janela, text="CONTROL SPENT", font=("Arial", 13, "bold"))
+titule.pack(pady=10)
+
+# 🔹 LADO ESQUERDO → Salário, Investimentos, Botão e Resultados
+quadro_esquerdo = ttk.Frame(janela)
+quadro_esquerdo.pack(side="left", padx=20, pady=10)
+
+texto_salario = ttk.Label(quadro_esquerdo, text="Salary / budget")
+texto_salario.pack(pady=5)
+
+salario = tk.Entry(quadro_esquerdo, width=18, validate="key",
+                   validatecommand=(registro, "%P"))
+salario.pack(pady=5)
+
+# Espaço entre salário e investimentos
+ttk.Separator(quadro_esquerdo).pack(fill="x", pady=15)
+
+inv1_texto = ttk.Label(quadro_esquerdo, text="Investimento 1:")
+inv1_texto.pack()
+inv1 = tk.Entry(quadro_esquerdo, width=18, validate="key",
+                validatecommand=(registro, "%P"))
+inv1.pack(pady=2)
+
+inv2_texto = ttk.Label(quadro_esquerdo, text="Investimento 2:")
+inv2_texto.pack()
+inv2 = tk.Entry(quadro_esquerdo, width=18, validate="key",
+                validatecommand=(registro, "%P"))
+inv2.pack(pady=2)
+
+ttk.Separator(quadro_esquerdo).pack(fill="x", pady=15)
+
+
+# 🧮 FUNÇÃO DE CALCULAR
+def calcular():
+    # Pega o salário
+    valor_salario = float(salario.get()) if salario.get() else 0
+
+    # Soma os gastos do lado direito
+    total_gastos = 0
+    for campo in campos_gastos:
+        valor = campo.get()
+        if valor:
+            total_gastos += float(valor)
+
+    # Soma os investimentos
+    valor_inv1 = float(inv1.get()) if inv1.get() else 0
+    valor_inv2 = float(inv2.get()) if inv2.get() else 0
+    total_investimentos = valor_inv1 + valor_inv2
+
+    # Calcula o que sobrou
+    saldo = valor_salario - total_gastos - total_investimentos
+
+    # Mostra tudo organizado
+    resultado_gastos.config(text=f"💸 Contas a pagar: R$ {total_gastos:.2f}")
+    resultado_invest.config(text=f"📈 Investimentos totais: R$ {total_investimentos:.2f}")
+    resultado_saldo.config(text=f"💰 Saldo disponível: R$ {saldo:.2f}")
+
+
+# Botão CALCULAR
+botao = ttk.Button(quadro_esquerdo, text="CALCULAR", command=calcular)
+botao.pack(pady=10)
+
+# Resultados embaixo do botão
+resultado_gastos = ttk.Label(quadro_esquerdo, text="", font=("Arial", 11))
+resultado_gastos.pack(pady=3)
+
+resultado_invest = ttk.Label(quadro_esquerdo, text="", font=("Arial", 11))
+resultado_invest.pack(pady=3)
+
+resultado_saldo = ttk.Label(quadro_esquerdo, text="", font=("Arial", 11, "bold"))
+resultado_saldo.pack(pady=8)
+
+# 🔹 LADO DIREITO → Lista de Gastos
+quadro_direito = ttk.Frame(janela)
+quadro_direito.pack(side="right", padx=20, pady=10)
+
+nomes_gastos = [
+    "Água", "Luz", "Internet", "Aluguel/Casa", "Moto", "Combustível",
+    "Cartão", "Supermercado", "Telefone", "Assinaturas", "Empréstimo",
+    "Seguro", "IPTU", "IPVA", "Farmácia", "Transporte", "Lazer",
+    "Roupas", "Dívidas", "Outros"
+]
+
+campos_gastos = []
+
+for nome in nomes_gastos:
+    linha = ttk.Frame(quadro_direito)
+    linha.pack(anchor="w", pady=1)
+
+    texto = ttk.Label(linha, text=nome + ":", width=15, anchor="w")
+    texto.pack(side="left")
+
+    campo = tk.Entry(linha, width=18, validate="key",
+                     validatecommand=(registro, "%P"))
+    campo.pack(side="left")
+    campos_gastos.append(campo)
+
+janela.mainloop()
